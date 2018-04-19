@@ -34,28 +34,55 @@ def fill(P,i,U):
 	return stack 
 
 
+def solve_other(N,K,U,P):
+	eps=0.0000001
+	delta=0.0001
+	print (U,delta)
+	P.sort(reverse=True)
+	if sum([1-p for p in P[:K]])<=U: return 1
+
+	while U>eps:
+		res=0
+		max_i=-1
+		for i in range(N):
+			if P[i]+delta>1: continue
+			P[i]+=delta
+			temp=calc(P,N,K)
+			if temp>res:
+				res=temp
+				max_i=i
+			P[i]-=delta
+		P[max_i]+=delta 
+		U-=delta
+	return calc(P,N,K)
+
+
+
+
+
+
+
 
 def solve(N,K,U,P):
-	P.sort(reverse=True) 
-	U_copy=U
-	i=-1
-	while U>0:
-		i+=1
-		U-=(1-P[i])
-	i-=1 
-	U=U_copy 
-	print ('start testing from',i )
-	prob=fill(P,i,U)
-	print ('filled probability',prob)
-	cur_ret=calc(prob,N,K)
-	print ('calculated result',cur_ret)
-	while 1:
-		i+=1
-		prob=fill(P,i,U)
-		ret=calc(prob,N,K)
-		if cur_ret>=ret: break 
-		cur_ret=ret
-	return cur_ret
+	eps=0.00000001
+	P.sort(reverse=True)
+	P=[1]+P 
+	cur=K
+	while U>eps and cur>0:
+		#print (U,cur,P)
+		if (P[cur-1]-P[cur])*(K+1-cur)<=U:
+			U-=((P[cur-1]-P[cur])*(K+1-cur))
+			P[cur:K+1]=[P[cur-1]]*(K+1-cur)
+			cur-=1 
+		else:
+			P[cur:K+1]=[U/(K+1-cur)+P[cur]]*(K+1-cur)
+			U=0 
+	if U>eps: return 1
+	return calc(P[1:],N,K)
+
+
+
+
 	
 
 	
